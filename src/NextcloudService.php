@@ -2,9 +2,11 @@
 
 namespace Sinapsteknologi\NextcloudManager;
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Http;
 use Sinapsteknologi\NextcloudManager\Models\NextcloudFile;
+use Illuminate\Support\Str;
 
 class NextcloudService
 {
@@ -29,7 +31,7 @@ class NextcloudService
 
         // Kalau storeAs gagal, fallback ke put()
         if (!$path || !Storage::disk($disk)->exists($path)) {
-            Log::debug('Fallback to put() method for file upload...');
+            \Log::debug('Fallback to put() method for file upload...');
 
             $rawContents = file_get_contents($file->getRealPath());
             $fullPath = trim($folder . '/' . $fileName, '/');
@@ -92,7 +94,6 @@ class NextcloudService
 
         return null;
     }
-}
 
     public function delete(string $path): void
     {
