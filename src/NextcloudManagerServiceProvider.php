@@ -3,6 +3,7 @@
 namespace Sinapsteknologi\NextcloudManager;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Config;
 use Sinapsteknologi\NextcloudManager\Commands\CleanNextcloudFiles;
 
 class NextcloudManagerServiceProvider extends ServiceProvider
