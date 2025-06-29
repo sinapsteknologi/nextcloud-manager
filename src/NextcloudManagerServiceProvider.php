@@ -24,5 +24,12 @@ class NextcloudManagerServiceProvider extends ServiceProvider
                 __DIR__.'/../database/migrations/2025_01_01_000000_create_nextcloud_files_table.php' => database_path('migrations/' . date('Y_m_d_His') . '_create_nextcloud_files_table.php'),
             ], 'nextcloud-config');
         }
+
+        Config::set('filesystems.disks.nextcloud', [
+            'driver'   => 'nextcloud',
+            'baseUri'  => env('NEXTCLOUD_URL', config('nextcloud.url')),
+            'userName' => env('NEXTCLOUD_USERNAME', config('nextcloud.username')),
+            'password' => env('NEXTCLOUD_PASSWORD', config('nextcloud.password')),
+        ]);
     }
 }
