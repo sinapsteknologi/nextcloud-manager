@@ -81,19 +81,54 @@ class NextcloudService
                 'permissions' => 1,
             ]
         );
+    
+        $json = $response->json();
+        \Log::debug('Create public share response', ['res' => $json]);
+    
+        if (
+            $response->successful() &&
+            isset($json['ocs']['data']['url'])
+        ) {
+            return [
+                'url' => rtrim($json['ocs']['data']['url'], '/') . '/download/' . basename($path),
+                'share_id' => $json['ocs']['data']['id'] ?? null,
+            ];
+        }
+    
+        // Fallback: check if share already exists
+        return $this->getExistingPublicShare($path);
+    }
+
+    protected function getExistingPublicShare(string $path): ?array
+    {
+        $response = \Http::withBasicAuth(
+            config('nextcloud.username'),
+            config('nextcloud.password')
+        )->withHeaders([
+            'OCS-APIREQUEST' => 'true',
+        ])->get(
+            rtrim(config('nextcloud.api_base'), '/') . '/apps/files_sharing/api/v1/shares',
+            [
+                'path' => '/' . ltrim($path, '/'),
+            ]
+        );
 
         $json = $response->json();
-        Log::debug('Nextcloud Share API response', ['json' => $json]);
+        \Log::debug('Fallback GET existing share', ['res' => $json]);
 
-        if ($response->successful() && isset($json['ocs']['data']['url'])) {
+        if (
+            $response->successful() &&
+            isset($json['ocs']['data'][0]['url'])
+        ) {
             return [
-                'url' => $json['ocs']['data']['url'],
-                'share_id' => $json['ocs']['data']['id'] ?? null,
+                'url' => rtrim($json['ocs']['data'][0]['url'], '/') . '/download/' . basename($path),
+                'share_id' => $json['ocs']['data'][0]['id'] ?? null,
             ];
         }
 
         return null;
     }
+
 
     public function delete(string $path): void
     {
