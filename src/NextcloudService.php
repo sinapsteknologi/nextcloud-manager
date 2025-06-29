@@ -15,6 +15,13 @@ class NextcloudService
         $disk = config('nextcloud.disk', 'nextcloud');
         $folder = config('nextcloud.path', '');
         $fileName = Str::random(16) . '_' . $file->getClientOriginalName();
+        $fullPath = trim($folder . '/' . $fileName, '/');
+
+        // Simpan ke DB
+        $record = NextcloudFile::create([
+            'name' => $fileName,
+            'path' => $fullPath,
+        ]);
 
         $path = null;
 
@@ -34,7 +41,6 @@ class NextcloudService
             \Log::debug('Fallback to put() method for file upload...');
 
             $rawContents = file_get_contents($file->getRealPath());
-            $fullPath = trim($folder . '/' . $fileName, '/');
 
             $success = Storage::disk($disk)->put($fullPath, $rawContents);
 
@@ -55,15 +61,12 @@ class NextcloudService
             return null;
         }
 
-        // Simpan ke DB
-        $record = NextcloudFile::create([
-            'name' => $fileName,
-            'path' => $path,
-            'url' => $shareData['url'],
-            'share_id' => $shareData['share_id'] ?? null,
-        ]);
+        $record->url = $shareData['url'];
+        $record->share_id = $shareData['share_id'] ?? null;
 
-        return $record->url;
+        $record->save();
+
+        return $shareData['url'];
     }
 
     public function createPublicShare(string $path): ?array
@@ -83,6 +86,7 @@ class NextcloudService
         );
     
         $json = $response->json();
+        
         \Log::debug('Create public share response', ['res' => $json]);
     
         if (
