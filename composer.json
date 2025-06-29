@@ -1,0 +1,25 @@
+{
+  "name": "sinapsteknologi/nextcloud-manager",
+  "description": "Laravel package to upload files to Nextcloud, create public links, and auto-clean expired files.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Sinapsteknologi\\NextcloudManager\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Sinapsteknologi\\NextcloudManager\\NextcloudManagerServiceProvider"
+      ]
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^11.0",
+    "illuminate/filesystem": "^11.0",
+    "guzzlehttp/guzzle": "^7.0",
+    "nino/laravel-nextcloud-fs": "^1.0"
+  }
+}
