@@ -16,7 +16,6 @@
     }
   },
   "require": {
-    "php": "^8.2",
-    "nino/laravel-nextcloud-fs": "^1.0"
+    "php": "^8.2"
   }
 }
